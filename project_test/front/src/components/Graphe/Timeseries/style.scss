@@ -1,0 +1,27 @@
+.canvas-timeseries {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  #canvas {
+    position: relative;
+  }
+
+  .button-container {
+    position: absolute !important;
+    left: 60px;
+    top: 50px;
+    width: 100%;
+  }
+
+  .select-container {
+    position: absolute !important;
+    top: 60px;
+    max-width: 50%;
+    right: 15px;
+    height: 30px;
+    #interval-select {
+      height: inherit;
+    }
+  }
+}

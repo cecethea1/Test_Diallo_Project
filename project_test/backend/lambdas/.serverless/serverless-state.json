@@ -1,0 +1,591 @@
+{
+  "service": {
+    "service": "alertsmodule",
+    "serviceObject": {
+      "name": "alertsmodule"
+    },
+    "provider": {
+      "stage": "dev",
+      "variableSyntax": "\\${([^{}]+?)}",
+      "name": "aws",
+      "runtime": "nodejs12.x",
+      "vpc": {
+        "securityGroupIds": [
+          "sg-0e8c59def10bbedc9"
+        ],
+        "subnetIds": [
+          "subnet-08d5038eed14f0662"
+        ]
+      },
+      "deploymentBucket": "alerts-module",
+      "region": "us-west-2",
+      "accountId": 448319106780,
+      "environment": {
+        "PGHOST": "10.0.52.102",
+        "PGUSER": "thminsight",
+        "PGPASSWORD": "cementys-dev-password",
+        "PGDATABASE": "thminsight",
+        "PGPORT": 5432,
+        "ACCOUNT_ID": 448319106780,
+        "QUEUE_NAME": "alertsQueue",
+        "REGION": "us-west-2",
+        "TWILIO_ACCOUNT_SID": "AC8942ca3068df8a596f36e3b76aac33fd",
+        "TWILIO_AUTH_TOKEN": "94482e2605a9de967b0839bd61393850",
+        "TWILIO_PHONE_NUMBER": "+12513131785",
+        "TWILIO_SERVICE_SID": "IS9733081b5d389e579e89b6097540d0f9",
+        "SENDGRID_API_KEY": "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",
+        "SENDGRID_EMAIL_SENDER": "khaledebdelli@cementys.com",
+        "SENDGRID_TEMPLATE_ID": "d-0eb6fce2b6444835b583b000e5562b34",
+        "WEB_PUSH_CONTACT": "mailto: thm-insight@cementys.com",
+        "PUBLIC_VAPID_KEY": "BIdIG7-p9NEbH5ZBejVAcEbrCJL5GdpOleIpC96PInfVFjWSWOnuS2c6pkx_Y8r5dxp4B7lSxczSileHLN9iOBA",
+        "PRIVATE_VAPID_KEY": "ATHic9rgpyq-1lyQwlYmLdrp33KcKW_jgweAB1G4oJ0",
+        "NODE_PATH": "./:/opt/node_modules"
+      },
+      "iamRoleStatements": [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "sqs:SendMessage",
+            "sqs:GetQueueUrl"
+          ],
+          "Resource": [
+            {
+              "Fn::GetAtt": [
+                "alertsQueue",
+                "Arn"
+              ]
+            }
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": [
+            "sqs:ListQueues"
+          ],
+          "Resource": "arn:aws:sqs:us-west-2:448319106780:*"
+        }
+      ],
+      "deploymentBucketObject": {
+        "name": "alerts-module"
+      },
+      "versionFunctions": true,
+      "remoteFunctionData": null,
+      "compiledCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "AlertCatcherLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/alertsmodule-dev-alertCatcher"
+            }
+          },
+          "AlertDistributerLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/alertsmodule-dev-alertDistributer"
+            }
+          },
+          "IamRoleLambdaExecution": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "lambda.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": {
+                    "Fn::Join": [
+                      "-",
+                      [
+                        "alertsmodule",
+                        "dev",
+                        "lambda"
+                      ]
+                    ]
+                  },
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:CreateLogStream",
+                          "logs:CreateLogGroup"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/alertsmodule-dev*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:PutLogEvents"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/alertsmodule-dev*:*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "$ref": "$[\"service\"][\"provider\"][\"iamRoleStatements\"][0]"
+                      },
+                      {
+                        "$ref": "$[\"service\"][\"provider\"][\"iamRoleStatements\"][1]"
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "sqs:ReceiveMessage",
+                          "sqs:DeleteMessage",
+                          "sqs:GetQueueAttributes"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::GetAtt": [
+                              "alertsQueue",
+                              "Arn"
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Path": "/",
+              "RoleName": {
+                "Fn::Join": [
+                  "-",
+                  [
+                    "alertsmodule",
+                    "dev",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    "lambdaRole"
+                  ]
+                ]
+              },
+              "ManagedPolicyArns": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          "LibNodeModuleLambdaLayer": {
+            "Type": "AWS::Lambda::LayerVersion",
+            "Properties": {
+              "Content": {
+                "S3Bucket": "alerts-module",
+                "S3Key": "serverless/alertsmodule/dev/1602573539544-2020-10-13T07:18:59.544Z/libNodeModule.zip"
+              },
+              "LayerName": "libNodeModule",
+              "Description": "additional node_module (pg, twilio, ajv, @sendgrid/mail)",
+              "CompatibleRuntimes": [
+                "nodejs12.x"
+              ]
+            }
+          },
+          "AlertCatcherLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "alerts-module",
+                "S3Key": "serverless/alertsmodule/dev/1602573539544-2020-10-13T07:18:59.544Z/alertsmodule.zip"
+              },
+              "FunctionName": "alertsmodule-dev-alertCatcher",
+              "Handler": "handler.alertCatcher",
+              "MemorySize": 1024,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Runtime": "nodejs12.x",
+              "Timeout": 30,
+              "Description": "manage alerts from database and send to queue alerts",
+              "Environment": {
+                "Variables": {
+                  "PGHOST": "10.0.52.102",
+                  "PGUSER": "thminsight",
+                  "PGPASSWORD": "cementys-dev-password",
+                  "PGDATABASE": "thminsight",
+                  "PGPORT": 5432,
+                  "ACCOUNT_ID": 448319106780,
+                  "QUEUE_NAME": "alertsQueue",
+                  "REGION": "us-west-2",
+                  "TWILIO_ACCOUNT_SID": "AC8942ca3068df8a596f36e3b76aac33fd",
+                  "TWILIO_AUTH_TOKEN": "94482e2605a9de967b0839bd61393850",
+                  "TWILIO_PHONE_NUMBER": "+12513131785",
+                  "TWILIO_SERVICE_SID": "IS9733081b5d389e579e89b6097540d0f9",
+                  "SENDGRID_API_KEY": "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",
+                  "SENDGRID_EMAIL_SENDER": "khaledebdelli@cementys.com",
+                  "SENDGRID_TEMPLATE_ID": "d-0eb6fce2b6444835b583b000e5562b34",
+                  "WEB_PUSH_CONTACT": "mailto: thm-insight@cementys.com",
+                  "PUBLIC_VAPID_KEY": "BIdIG7-p9NEbH5ZBejVAcEbrCJL5GdpOleIpC96PInfVFjWSWOnuS2c6pkx_Y8r5dxp4B7lSxczSileHLN9iOBA",
+                  "PRIVATE_VAPID_KEY": "ATHic9rgpyq-1lyQwlYmLdrp33KcKW_jgweAB1G4oJ0",
+                  "NODE_PATH": "./:/opt/node_modules"
+                }
+              },
+              "VpcConfig": {
+                "SecurityGroupIds": {
+                  "$ref": "$[\"service\"][\"provider\"][\"vpc\"][\"securityGroupIds\"]"
+                },
+                "SubnetIds": {
+                  "$ref": "$[\"service\"][\"provider\"][\"vpc\"][\"subnetIds\"]"
+                }
+              },
+              "Layers": [
+                {
+                  "Ref": "LibNodeModuleLambdaLayer"
+                }
+              ]
+            },
+            "DependsOn": [
+              "AlertCatcherLogGroup"
+            ]
+          },
+          "AlertCatcherLambdaVersionHQnyZqwlJBVvu48kxVgys7iaS3Na9JynIfIHlOgo": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "AlertCatcherLambdaFunction"
+              },
+              "CodeSha256": "sxIriJt2SnSyEFIdDmB9XLUy9mWZohBs5VsDtc3VYHk=",
+              "Description": "manage alerts from database and send to queue alerts"
+            }
+          },
+          "AlertDistributerLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "alerts-module",
+                "S3Key": "serverless/alertsmodule/dev/1602573539544-2020-10-13T07:18:59.544Z/alertsmodule.zip"
+              },
+              "FunctionName": "alertsmodule-dev-alertDistributer",
+              "Handler": "handler.alertDistributer",
+              "MemorySize": 1024,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Runtime": "nodejs12.x",
+              "Timeout": 60,
+              "Description": "distributing the ALERT range from the Queue",
+              "Environment": {
+                "Variables": {
+                  "PGHOST": "10.0.52.102",
+                  "PGUSER": "thminsight",
+                  "PGPASSWORD": "cementys-dev-password",
+                  "PGDATABASE": "thminsight",
+                  "PGPORT": 5432,
+                  "ACCOUNT_ID": 448319106780,
+                  "QUEUE_NAME": "alertsQueue",
+                  "REGION": "us-west-2",
+                  "TWILIO_ACCOUNT_SID": "AC8942ca3068df8a596f36e3b76aac33fd",
+                  "TWILIO_AUTH_TOKEN": "94482e2605a9de967b0839bd61393850",
+                  "TWILIO_PHONE_NUMBER": "+12513131785",
+                  "TWILIO_SERVICE_SID": "IS9733081b5d389e579e89b6097540d0f9",
+                  "SENDGRID_API_KEY": "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",
+                  "SENDGRID_EMAIL_SENDER": "khaledebdelli@cementys.com",
+                  "SENDGRID_TEMPLATE_ID": "d-0eb6fce2b6444835b583b000e5562b34",
+                  "WEB_PUSH_CONTACT": "mailto: thm-insight@cementys.com",
+                  "PUBLIC_VAPID_KEY": "BIdIG7-p9NEbH5ZBejVAcEbrCJL5GdpOleIpC96PInfVFjWSWOnuS2c6pkx_Y8r5dxp4B7lSxczSileHLN9iOBA",
+                  "PRIVATE_VAPID_KEY": "ATHic9rgpyq-1lyQwlYmLdrp33KcKW_jgweAB1G4oJ0",
+                  "NODE_PATH": "./:/opt/node_modules"
+                }
+              },
+              "VpcConfig": {
+                "SecurityGroupIds": {
+                  "$ref": "$[\"service\"][\"provider\"][\"vpc\"][\"securityGroupIds\"]"
+                },
+                "SubnetIds": {
+                  "$ref": "$[\"service\"][\"provider\"][\"vpc\"][\"subnetIds\"]"
+                }
+              },
+              "Layers": [
+                {
+                  "Ref": "LibNodeModuleLambdaLayer"
+                }
+              ]
+            },
+            "DependsOn": [
+              "AlertDistributerLogGroup"
+            ]
+          },
+          "AlertDistributerLambdaVersion5qivicKrWiE66qZpFB3YedwPtw7RviJifcowszMKJI": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "AlertDistributerLambdaFunction"
+              },
+              "CodeSha256": "sxIriJt2SnSyEFIdDmB9XLUy9mWZohBs5VsDtc3VYHk=",
+              "Description": "distributing the ALERT range from the Queue"
+            }
+          },
+          "AlertCatcherEventsRuleSchedule1": {
+            "Type": "AWS::Events::Rule",
+            "Properties": {
+              "ScheduleExpression": "cron(0/1 * * * ? *)",
+              "State": "DISABLED",
+              "Name": "alert-sender-event",
+              "Description": "this event will trigger lambda alertCatcher every 1 minute",
+              "Targets": [
+                {
+                  "Arn": {
+                    "Fn::GetAtt": [
+                      "AlertCatcherLambdaFunction",
+                      "Arn"
+                    ]
+                  },
+                  "Id": "alertCatcherSchedule"
+                }
+              ]
+            }
+          },
+          "AlertCatcherLambdaPermissionEventsRuleSchedule1": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "AlertCatcherLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "events.amazonaws.com",
+              "SourceArn": {
+                "Fn::GetAtt": [
+                  "AlertCatcherEventsRuleSchedule1",
+                  "Arn"
+                ]
+              }
+            }
+          },
+          "AlertDistributerEventSourceMappingSQSAlertsQueue": {
+            "Type": "AWS::Lambda::EventSourceMapping",
+            "DependsOn": "IamRoleLambdaExecution",
+            "Properties": {
+              "BatchSize": 1,
+              "EventSourceArn": {
+                "Fn::GetAtt": [
+                  "alertsQueue",
+                  "Arn"
+                ]
+              },
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "AlertDistributerLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Enabled": true
+            }
+          },
+          "alertsQueue": {
+            "Type": "AWS::SQS::Queue",
+            "Properties": {
+              "QueueName": "alertsQueue"
+            }
+          },
+          "VPCGatewayAttachmentLambda": {
+            "Type": "AWS::EC2::VPCGatewayAttachment",
+            "Properties": {
+              "VpcId": "vpc-0aa8fae6b349e4867",
+              "InternetGatewayId": "igw-09e007de01292dc12"
+            }
+          },
+          "SubnetRouteTableAssociationLambdaPrivateA": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+              "SubnetId": "subnet-08d5038eed14f0662",
+              "RouteTableId": "rtb-0f863febf8a4afa31"
+            }
+          },
+          "SubnetRouteTableAssociationLambdaPublicA": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+              "SubnetId": "subnet-07395d89cd1c4a3c2",
+              "RouteTableId": "rtb-04b0bdaf27d2c24ea"
+            }
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": "alerts-module"
+          },
+          "LibNodeModuleLambdaLayerQualifiedArn": {
+            "Description": "Current Lambda layer version",
+            "Value": {
+              "Ref": "LibNodeModuleLambdaLayer"
+            }
+          },
+          "LibNodeModuleLambdaLayerHash": {
+            "Description": "Current Lambda layer hash",
+            "Value": "40a4d86d381fdcb6ec7e0f34a5e1a94f599de5dc"
+          },
+          "LibNodeModuleLambdaLayerS3Key": {
+            "Description": "Current Lambda layer S3Key",
+            "Value": "serverless/alertsmodule/dev/1602573539544-2020-10-13T07:18:59.544Z/libNodeModule.zip"
+          },
+          "AlertCatcherLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "AlertCatcherLambdaVersionHQnyZqwlJBVvu48kxVgys7iaS3Na9JynIfIHlOgo"
+            }
+          },
+          "AlertDistributerLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "AlertDistributerLambdaVersion5qivicKrWiE66qZpFB3YedwPtw7RviJifcowszMKJI"
+            }
+          }
+        }
+      }
+    },
+    "custom": {
+      "serverless-offline-sqs": {
+        "autoCreate": true,
+        "apiVersion": "2020-06-15",
+        "endpoint": "http://0.0.0.0:9324",
+        "region": "us-west-2",
+        "accessKeyId": "root",
+        "secretAccessKey": "root"
+      }
+    },
+    "pluginsData": {},
+    "functions": {
+      "alertCatcher": {
+        "handler": "handler.alertCatcher",
+        "description": "manage alerts from database and send to queue alerts",
+        "timeout": 30,
+        "layers": {
+          "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"AlertCatcherLambdaFunction\"][\"Properties\"][\"Layers\"]"
+        },
+        "events": [
+          {
+            "schedule": {
+              "rate": "cron(0/1 * * * ? *)",
+              "name": "alert-sender-event",
+              "description": "this event will trigger lambda alertCatcher every 1 minute",
+              "enabled": false
+            }
+          }
+        ],
+        "name": "alertsmodule-dev-alertCatcher",
+        "package": {},
+        "memory": 1024,
+        "runtime": "nodejs12.x",
+        "vpc": {},
+        "versionLogicalId": "AlertCatcherLambdaVersionHQnyZqwlJBVvu48kxVgys7iaS3Na9JynIfIHlOgo"
+      },
+      "alertDistributer": {
+        "handler": "handler.alertDistributer",
+        "description": "distributing the ALERT range from the Queue",
+        "timeout": 60,
+        "layers": {
+          "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"AlertDistributerLambdaFunction\"][\"Properties\"][\"Layers\"]"
+        },
+        "events": [
+          {
+            "sqs": {
+              "arn": {
+                "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"IamRoleLambdaExecution\"][\"Properties\"][\"Policies\"][0][\"PolicyDocument\"][\"Statement\"][4][\"Resource\"][0]"
+              },
+              "batchSize": 1
+            }
+          }
+        ],
+        "name": "alertsmodule-dev-alertDistributer",
+        "package": {},
+        "memory": 1024,
+        "runtime": "nodejs12.x",
+        "vpc": {},
+        "versionLogicalId": "AlertDistributerLambdaVersion5qivicKrWiE66qZpFB3YedwPtw7RviJifcowszMKJI"
+      }
+    },
+    "resources": {
+      "Resources": {
+        "alertsQueue": {
+          "Type": "AWS::SQS::Queue",
+          "Properties": {
+            "QueueName": "alertsQueue"
+          }
+        },
+        "VPCGatewayAttachmentLambda": {
+          "Type": "AWS::EC2::VPCGatewayAttachment",
+          "Properties": {
+            "VpcId": "vpc-0aa8fae6b349e4867",
+            "InternetGatewayId": "igw-09e007de01292dc12"
+          }
+        },
+        "SubnetRouteTableAssociationLambdaPrivateA": {
+          "Type": "AWS::EC2::SubnetRouteTableAssociation",
+          "Properties": {
+            "SubnetId": "subnet-08d5038eed14f0662",
+            "RouteTableId": "rtb-0f863febf8a4afa31"
+          }
+        },
+        "SubnetRouteTableAssociationLambdaPublicA": {
+          "Type": "AWS::EC2::SubnetRouteTableAssociation",
+          "Properties": {
+            "SubnetId": "subnet-07395d89cd1c4a3c2",
+            "RouteTableId": "rtb-04b0bdaf27d2c24ea"
+          }
+        }
+      },
+      "Outputs": {}
+    },
+    "serviceFilename": "serverless.yml",
+    "layers": {
+      "libNodeModule": {
+        "path": "lib",
+        "description": "additional node_module (pg, twilio, ajv, @sendgrid/mail)",
+        "compatibleRuntimes": [
+          "nodejs12.x"
+        ],
+        "package": {
+          "artifact": "D:\\projects\\THM-Insight\\backend\\lambdas\\.serverless\\libNodeModule.zip"
+        }
+      }
+    },
+    "isDashboardMonitoringPreconfigured": false,
+    "artifact": "D:\\projects\\THM-Insight\\backend\\lambdas\\.serverless\\alertsmodule.zip"
+  },
+  "package": {
+    "artifactDirectoryName": "serverless/alertsmodule/dev/1602573539544-2020-10-13T07:18:59.544Z",
+    "artifact": "alertsmodule.zip"
+  }
+}

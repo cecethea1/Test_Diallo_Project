@@ -1,0 +1,95 @@
+version: 2.1
+jobs:
+  test:
+    parameters:
+      service_path:
+        type: string
+    docker:
+      - image: circleci/node:12
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - dependencies-cache-{{ checksum "<< parameters.service_path >>/package.json" }}
+            - dependencies-cache
+      - run:
+          name: npm install
+          command: |
+            cd << parameters.service_path >>
+            npm install
+      - run:
+          name: npm run lint
+          command: |
+            cd << parameters.service_path >>
+            npm run lint
+      - run:
+          name: npm run test
+          command: |
+            cd << parameters.service_path >>
+            npm run test
+      - save_cache:
+          paths:
+            - node_modules
+            - << parameters.service_path >>/node_modules
+          key: dependencies-cache-{{ checksum "<< parameters.service_path >>/package.json" }}
+
+  deployment:
+    parameters:
+      service_path:
+        type: string
+    docker:
+      - image: circleci/python:3.8
+    steps:
+      - run:
+          name: Install System Packages
+          command: |
+            sudo apt-get update && \
+            sudo apt-get -y install rsync && \
+            sudo apt-get clean && \
+            sudo rm -rf /var/lib/apt/lists/* && \
+            pip install --upgrade pip
+            pip install --no-cache Ansible==2.9.0
+      - checkout
+      - add_ssh_keys:
+          name: DEPLOY - Add SSH keys
+          fingerprints:
+            - "11:11:11"
+            - "22:22:22"
+      - run:
+          name: DEPLOY - make directory for SSH keys
+          command: mkdir << parameters.service_path >>/tasks/files/.ssh
+      - run:
+          name: DEPLOY - Copy SSH keys
+          command: |
+            cp ~/.ssh/id_rsa << parameters.service_path >>/tasks/files/.ssh/id_rsa_develop
+            cp ~/.ssh/id_rsa << parameters.service_path >>/tasks/files/.ssh/id_rsa_deployment
+      - deploy:
+          name: DEPLOY - Run deployment
+          command: |
+            ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook << parameters.service_path >>/main.yml \
+            --extra-vars "CIRCLE_BRANCH=${CIRCLE_BRANCH}" \
+            -i << parameters.service_path >>/hosts \
+            -e env=${CIRCLE_BRANCH} \
+            --key-file=<< parameters.service_path >>/tasks/files/.ssh/id_rsa_${CIRCLE_BRANCH}
+
+workflows:
+  build-and-deploy:
+    jobs:
+      - test:
+          name: Test API
+          service_path: backend/api
+      - test:
+          name: Test Front
+          service_path: front
+      - deployment:
+          requires:
+            - Test API
+            - Test Front
+          name: Deployment
+          service_path: ansible
+          filters:
+            branches:
+              only:
+                - demo-app
+                - deployment
+#inspiration https://seed.run/blog/how-to-build-a-cicd-pipeline-for-serverless-apps-with-circleci.html

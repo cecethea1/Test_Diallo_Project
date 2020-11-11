@@ -1,0 +1,44 @@
+.section-1 {
+    display: grid;
+    justify-content: start;
+}
+
+.formMain {
+    background-color: white;
+}
+.formContent {
+    display: grid;
+    grid-template-columns: auto  auto;
+    column-gap: 30px ;
+    margin-top: 20px;
+}
+
+.description {
+    margin-top: 30px;
+    padding: 10px;
+}
+
+.Left {
+    padding: 20px;
+}
+
+.Left > div {
+    padding-top: 10px;
+}
+
+.Right {
+    padding: 20px;
+}
+
+.Right > div {
+    padding-top: 10px;
+}
+.savebutton {
+    display: grid;
+    justify-content: end;
+    padding: 20px;
+}
+
+.draAnddropimage {
+    padding: 20px;
+}

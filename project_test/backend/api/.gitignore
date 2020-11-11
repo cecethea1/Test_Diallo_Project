@@ -1,0 +1,6 @@
+#ignore .idea file
+
+/node_modules
+.env
+coverage
+.vscode

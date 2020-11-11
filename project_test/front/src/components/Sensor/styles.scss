@@ -1,0 +1,41 @@
+.container {
+    display: grid;
+    grid-template-rows: 70px repeat(minmax(auto, auto));
+    grid-row-gap: 1em;
+    padding: 5px;
+}
+
+.container_bottom {
+    display: grid;
+    grid-template-columns: auto 160px;
+    grid-gap: 0.4em;
+    margin-top: 20px;
+}
+
+.container_buttom {
+    display: grid;
+    grid-template-columns: auto auto;
+    align-items: center;
+    justify-content: end;
+    grid-gap: 0.4em;
+}
+
+.MuiStepper-root stepper {
+    padding: 5px;
+    background: 'transparent';
+  }
+
+.item_1 {
+    margin-bottom: 20px;;
+}
+
+@media only screen and (max-width: 600px) {
+    .container_bottom {
+        display: grid;
+        grid-template-columns: auto auto;
+        grid-row: auto auto;
+        grid-gap: 0.4em;
+        margin-top: 20px;
+        
+    }
+  }

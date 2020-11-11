@@ -1,0 +1,15 @@
+.section-sub {
+    display: grid;
+    grid-template-columns: 1fr  1fr;
+    column-gap: 2em;
+    border: 1px solid black;
+
+}
+
+.section-left {
+    border: 1px solid black;
+}
+
+.section-right {
+    border: 1px solid black;
+}

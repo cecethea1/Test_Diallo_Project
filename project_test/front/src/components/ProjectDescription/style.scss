@@ -1,0 +1,21 @@
+.projectdescription{
+
+  .icon{
+    height: 100%;
+    width:100%;
+    display: flex !important;
+    border-top: 10px solid #032E8DC9  ;
+    border-bottom : 10px solid #032E8DC9;
+  }
+
+  .carousel-item , .img {
+    height: 100%;
+    display: flex !important;
+    justify-content: center;
+    object-fit: fill;
+  }
+
+}
+
+
+

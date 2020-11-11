@@ -1,0 +1,82 @@
+.react-grid-layout {
+    position: relative;
+    transition: height 200ms ease;
+}
+.react-grid-item {
+    transition: all 200ms ease;
+    transition-property: left, top;
+    display: table;
+}
+.child {
+    display: row;
+}
+.react-grid-item.cssTransforms {
+    transition-property: transform;
+}
+.react-grid-item.resizing {
+    z-index: 1;
+    will-change: width, height;
+}
+
+.react-grid-item.react-draggable-dragging {
+    transition: none;
+    z-index: 3;
+    will-change: transform;
+}
+
+.react-grid-item.react-grid-placeholder {
+    background: red;
+    opacity: 0.2;
+    transition-duration: 100ms;
+    z-index: 2;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+
+.react-grid-layout:not(.active) > .react-grid-item > .react-resizable-handle {
+    position: absolute;
+    z-index: 1000;
+    width: 20px;
+    height: 20px;
+    background-repeat: no-repeat;
+    background-origin: content-box;
+    box-sizing: border-box;
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2IDYiIHN0eWxlPSJiYWNrZ3JvdW5kLWNvbG9yOiNmZmZmZmYwMCIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSI2cHgiIGhlaWdodD0iNnB4Ij48ZyBvcGFjaXR5PSIwLjMwMiI+PHBhdGggZD0iTSA2IDYgTCAwIDYgTCAwIDQuMiBMIDQgNC4yIEwgNC4yIDQuMiBMIDQuMiAwIEwgNiAwIEwgNiA2IEwgNiA2IFoiIGZpbGw9IiMwMDAwMDAiLz48L2c+PC9zdmc+');
+    background-position: bottom right;
+    right: 0;
+    bottom: 0;
+    cursor: se-resize;
+}
+
+.react-grid-layout:not(.active) {
+    background: white;
+}
+.react-grid-layout .active {
+    padding: -10px;
+    margin: -10px;
+}
+.react-grid-item {
+    box-sizing: border-box;
+    margin-right: auto; /* 1 */
+    margin-left: auto; /* 1 */
+}
+.react-grid-item:not(.react-grid-placeholder) {
+    padding: 0;
+}
+.react-grid-item.resizing {
+    opacity: 0.9;
+}
+
+.react-grid-item .minMax {
+    font-size: 12px;
+}
+.react-grid-item .add {
+    cursor: pointer;
+}
+li b {
+    font-size: 19px;
+    line-height: 14px;
+}

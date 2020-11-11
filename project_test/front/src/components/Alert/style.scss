@@ -1,0 +1,50 @@
+.main-alert {
+    font-size: 1.2em;
+    min-height: 100%;
+    thead > tr {
+        height: 45px;
+        background: #f5f6fa;
+        color: #a3a6b4;
+        opacity: 1;
+        text-align: center;
+    }
+    tbody > tr {
+        td {
+            height: 18px;
+            text-align: center;
+            font: Regular 13px/20px Source Sans Pro;
+            letter-spacing: 0px;
+            color: #4d4f5c;
+            padding: 32px;
+            opacity: 1;
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .main-alert {
+        margin-left: 0;
+        margin-right: 0;
+        font-size: 0.8em;
+        thead > tr {
+            th {
+                height: 15px;
+                background: #f5f6fa;
+                color: #a3a6b4;
+                opacity: 1;
+            }
+        }
+        tbody > tr {
+            td {
+                height: 18px;
+                align-items: center;
+                font: Regular 13px/20px Source Sans Pro;
+                letter-spacing: 0px;
+                color: #4d4f5c;
+                padding: 12px;
+                opacity: 1;
+                text-overflow: ellipsis;
+            }
+        }
+    }
+}
